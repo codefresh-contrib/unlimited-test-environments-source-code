@@ -36,7 +36,7 @@ docker run -p 8080:8080 my-spring-boot-sample
 mvn verify
 ```
 
-## To use this project in Codefresh 
+## To use this project in Codefresh
 
 There is also a [codefresh.yml](codefresh.yml) for easy usage with the [Codefresh](codefresh.io) CI/CD platform (Opening a PR).
 And a [codefresh-close.yml](codefresh-close.yml) file for closing a PR.
