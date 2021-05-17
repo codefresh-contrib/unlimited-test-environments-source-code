@@ -12,8 +12,8 @@ steps:
   main_clone:
     title: "Cloning repository"
     type: "git-clone"
-    repo: "codefresh-contrib/cdp-sample-app"
-    revision: "${{CF_BRANCH}}"
+    repo: "codefresh-contrib/unlimited-test-environments-source-code"
+    revision: "${{CF_REVISION}}"
     stage: "prepare"
 
   run_unit_tests:
@@ -26,7 +26,7 @@ steps:
     title: Building Docker Image
     type: build
     stage: prepare
-    image_name: kostiscodefresh/cdp-sample-app
+    image_name: kostiscodefresh/spring-actuator-sample-app
     working_directory: ./
     tag: '${{CF_BRANCH}}'
     dockerfile: Dockerfile
@@ -41,7 +41,7 @@ steps:
     stage: verify
     image: 'aquasec/trivy'
     commands:
-      - trivy image docker.io/kostiscodefresh/cdp-sample-app:${{CF_BRANCH}}
+      - trivy image docker.io/kostiscodefresh/spring-actuator-sample-app:${{CF_BRANCH}}
   run_integration_tests:
     title: Integration tests
     stage: verify
@@ -66,4 +66,34 @@ steps:
     image: 'maven:3.8.1-jdk-11-slim'
     commands:
       - mvn -Dmaven.repo.local=/codefresh/volume/m2_repository sonar:sonar -Dsonar.login=${{SONAR_TOKEN}} -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=kostis-codefresh-github
-      
+  clone:
+    title: "Cloning repository"
+    type: "git-clone"
+    repo: "codefresh-contrib/unlimited-test-environments-manifests"
+    revision: main
+    stage: "deploy"      
+  deploy:
+    title: Deploying Helm Chart
+    type: helm
+    stage: deploy
+    working_directory: ./unlimited-test-environments-manifests
+    arguments:
+      action: install
+      chart_name: simple-java-app
+      release_name: my-spring-app
+      helm_version: 3.2.4
+      kube_context: myawscluster
+      namespace: ${{CF_BRANCH_TAG_NORMALIZED}}
+      cmd_ps: '--create-namespace --wait --timeout 5m'
+      custom_values:
+        - 'image_tag=main'
+        - 'replicaCount=3'
+        - 'ingress_path=/${{CF_BRANCH_TAG_NORMALIZED}}/'      
+  add_pr_comment:
+    title: Adding comment on PR
+    stage: deploy
+    type: kostis-codefresh/github-pr-comment
+    fail_fast: false
+    arguments:
+      PR_COMMENT_TEXT: "[CI] Staging environment is at https://kostis.sales-dev.codefresh.io/${{CF_BRANCH_TAG_NORMALIZED}}/"
+      GIT_PROVIDER_NAME: 'github-1'      

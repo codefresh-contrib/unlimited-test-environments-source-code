@@ -1,0 +1,17 @@
+# More examples of Codefresh YAML can be found at
+# https://codefresh.io/docs/docs/yaml-examples/examples/
+
+version: "1.0"
+steps:
+  delete_app:
+    title: Delete app
+    type: helm
+    arguments:
+      action: auth
+      helm_version: 3.2.4
+      kube_context: myawscluster
+      namespace: ${{CF_BRANCH_TAG_NORMALIZED}}
+      commands:
+            - helm delete my-spring-app --namespace ${{CF_BRANCH_TAG_NORMALIZED}}
+            - kubectl delete namespace ${{CF_BRANCH_TAG_NORMALIZED}}
+
