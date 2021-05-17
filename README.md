@@ -1,6 +1,5 @@
 # Unlimited testing environments with Codefresh and Kubernetes
 
-
 This is an example Java application that uses Spring Boot 2, Maven and Docker.
 It is compiled using Codefresh.
 
@@ -39,11 +38,9 @@ mvn verify
 
 ## To use this project in Codefresh 
 
-
-There is also a [codefresh.yaml](codefresh.yaml) for easy usage with the [Codefresh](codefresh.io) CI/CD platform.
-
+There is also a [codefresh.yml](codefresh.yml) for easy usage with the [Codefresh](codefresh.io) CI/CD platform (Opening a PR).
+And a [codefresh-close.yml](codefresh-close.yml) file for closing a PR.
 
 More details can be found in [Codefresh documentation](https://codefresh.io/docs/docs/ci-cd-guides/unlimited-testing-environments/)
-
 
 Enjoy!
