@@ -86,7 +86,7 @@ steps:
       namespace: ${{CF_BRANCH_TAG_NORMALIZED}}
       cmd_ps: '--create-namespace --wait --timeout 5m'
       custom_values:
-        - 'image_tag=main'
+        - 'image_tag=${{CF_BRANCH_TAG_NORMALIZED}}'
         - 'replicaCount=3'
         - 'ingress_path=/${{CF_BRANCH_TAG_NORMALIZED}}/'      
   add_pr_comment:
