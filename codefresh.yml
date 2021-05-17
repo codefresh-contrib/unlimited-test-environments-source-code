@@ -1,0 +1,69 @@
+# More examples of Codefresh YAML can be found at
+# https://codefresh.io/docs/docs/yaml-examples/examples/
+
+version: "1.0"
+# Stages can help you organize your steps in stages
+stages:
+  - "prepare"
+  - "verify"
+  - "deploy"
+
+steps:
+  main_clone:
+    title: "Cloning repository"
+    type: "git-clone"
+    repo: "codefresh-contrib/cdp-sample-app"
+    revision: "${{CF_BRANCH}}"
+    stage: "prepare"
+
+  run_unit_tests:
+    title: Compile/Unit test
+    stage: prepare
+    image: 'maven:3.5.2-jdk-8-alpine'
+    commands:
+      - mvn -Dmaven.repo.local=/codefresh/volume/m2_repository package   
+  build_app_image:
+    title: Building Docker Image
+    type: build
+    stage: prepare
+    image_name: kostiscodefresh/cdp-sample-app
+    working_directory: ./
+    tag: '${{CF_BRANCH}}'
+    dockerfile: Dockerfile
+  scan_code:
+    title: Source security scan
+    stage: verify
+    image: 'snyk/snyk-cli:maven-3.6.3_java11'
+    commands:
+      - snyk monitor       
+  scan_image:
+    title: Container security scan
+    stage: verify
+    image: 'aquasec/trivy'
+    commands:
+      - trivy image docker.io/kostiscodefresh/cdp-sample-app:${{CF_BRANCH}}
+  run_integration_tests:
+    title: Integration tests
+    stage: verify
+    image: maven:3.5.2-jdk-8-alpine
+    commands:
+     - mvn -Dmaven.repo.local=/codefresh/volume/m2_repository verify -Dserver.host=http://my-spring-app -Dsonar.organization=kostis-codefresh-github
+    services:
+      composition:
+        my-spring-app:
+          image: '${{build_app_image}}'
+          ports:
+            - 8080
+      readiness:
+        timeoutSeconds: 30
+        periodSeconds: 15
+        image: byrnedo/alpine-curl
+        commands:
+          - "curl http://my-spring-app:8080/"
+  sonar_scan:
+    title: Sonar Scan
+    stage: verify
+    image: 'maven:3.8.1-jdk-11-slim'
+    commands:
+      - mvn -Dmaven.repo.local=/codefresh/volume/m2_repository sonar:sonar -Dsonar.login=${{SONAR_TOKEN}} -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=kostis-codefresh-github
+      
