@@ -96,12 +96,12 @@ steps:
     fail_fast: false
     arguments:
       PR_COMMENT_TEXT: "[CI] Staging environment is at https://kostis.sales-dev.codefresh.io/${{CF_BRANCH_TAG_NORMALIZED}}/"
-      GIT_PROVIDER_NAME: 'github-1'      
+      GIT_PROVIDER_NAME: 'github-1'
   run_smoke_tests:
     title: Smoke tests
     stage: deploy
     image: maven:3.5.2-jdk-8-alpine
-    working_directory: "${{clone}}" 
+    working_directory: "${{main_clone}}" 
     fail_fast: false
     commands:
-     - mvn -Dmaven.repo.local=/codefresh/volume/m2_repository verify -Dserver.host=https://kostis.sales-dev.codefresh.io/${{CF_BRANCH_TAG_NORMALIZED}}/  -Dserver.port=80      
+     - mvn -Dmaven.repo.local=/codefresh/volume/m2_repository verify -Dserver.host=https://kostis.sales-dev.codefresh.io/${{CF_BRANCH_TAG_NORMALIZED}}/  -Dserver.port=443            
