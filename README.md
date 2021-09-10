@@ -41,6 +41,6 @@ mvn verify
 There is also a [codefresh.yml](codefresh.yml) for easy usage with the [Codefresh](codefresh.io) CI/CD platform (Opening a PR).
 And a [codefresh-close.yml](codefresh-close.yml) file for closing a PR.
 
-More details can be found in [Codefresh documentation](https://codefresh.io/docs/docs/ci-cd-guides/unlimited-testing-environments/)
+More details can be found in [Codefresh documentation](https://codefresh.io/docs/docs/ci-cd-guides/preview-environments/)
 
 Enjoy!
